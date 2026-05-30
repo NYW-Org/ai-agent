@@ -7,10 +7,10 @@ hf_volume = modal.Volume.from_name("qwen-model-cache", create_if_missing=True)
 image = (
     modal.Image.debian_slim()
     .pip_install("fastapi[standard]", "transformers>=4.37.0", "torch", "accelerate", "peft")
+    .env({"HF_HUB_CACHE": "/cache"})
     .add_local_dir("schema", remote_path="/root/schema")
     .add_local_file("engine.py", remote_path="/root/engine.py")
     .add_local_file("service.py", remote_path="/root/service.py")
-    .env({"HF_HUB_CACHE": "/cache"})
 )
 
 web_app = FastAPI(title="Qwen Session Orchestration Gateway")

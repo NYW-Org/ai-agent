@@ -44,6 +44,10 @@ class QwenInferenceEngine:
             self.model = base_model
 
     def generate_text(self, formatted_prompt: str) -> str:
+        if next(self.model.parameters()).device.type != "cuda":
+            print("🚀 GPU Worker detected! Moving model tensors to CUDA VRAM...")
+            self.model = self.model.to("cuda")
+
         inputs = self.tokenizer([formatted_prompt], return_tensors="pt").to("cuda")
         with torch.inference_mode():
             generated_ids = self.model.generate(**inputs, max_new_tokens=256, temperature=0.7, do_sample=True)

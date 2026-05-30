@@ -8,6 +8,8 @@ class QwenInferenceEngine:
         self.cache_dir = cache_dir
         self.tokenizer = None
         self.model = None
+        self.hf_token="xxxxxx"
+        self.base_model_id = "Qwen/Qwen2.5-7B-Instruct"
 
     def initialize(self):
         print(f"🔄 Initializing Hardware LLM Tensors: {self.model_id}...")
@@ -17,15 +19,29 @@ class QwenInferenceEngine:
             trust_remote_code=True,
             token=self.hf_token
         )
-        self.model = AutoModelForCausalLM.from_pretrained(
-            self.model_id,
+        base_model = AutoModelForCausalLM.from_pretrained(
+            self.base_model_id,
             cache_dir=self.cache_dir,
             torch_dtype=torch.float16,
             device_map="auto",
             trust_remote_code=True,
             token=self.hf_token
         )
-        print("✅ Qwen model engine active in VRAM.")
+
+        print(f"🪄 Merging Fine-Tuned LoRA Adapters from: {self.model_id}...")
+        try:
+            # 3. Dynamic runtime patching overlays your custom parameters
+            from peft import PeftModel
+            self.model = PeftModel.from_pretrained(
+                base_model,
+                self.model_id,
+                token=self.hf_token
+            )
+            print("✅ Fine-tuned adapters successfully fused with Base Model.")
+        except ImportError:
+            # Fallback if peft wasn't explicitly pinned in the environment layer yet
+            print("⚠️ PEFT library missing. Using base model processing fallback layer.")
+            self.model = base_model
 
     def generate_text(self, formatted_prompt: str) -> str:
         inputs = self.tokenizer([formatted_prompt], return_tensors="pt").to("cuda")

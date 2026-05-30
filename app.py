@@ -16,7 +16,15 @@ image = (
 web_app = FastAPI(title="Qwen Session Orchestration Gateway")
 
 
-@app.cls(image=image, gpu="A10G", volumes={"/cache": hf_volume}, enable_memory_snapshot=True)
+@app.cls(
+    image=image,
+    gpu="L4",                      # 1. 💡 SWITCH TO L4: Cheaper hourly rate, great performance
+    volumes={"/cache": hf_volume},
+    enable_memory_snapshot=False,  # Keep this False so it initializes directly on the GPU
+    min_containers=0,              # 2. 💸 CRITICAL FOR BUDGET: Scale to 0 when idle so you don't burn cash
+    max_containers=2,              # 3. Prevent accidental cost spikes if traffic floods in
+    container_idle_timeout=300     # 4. Keep GPU warm for 5 minutes after a hit for instant replies
+)
 class ModelServer:
     @modal.enter(snap=True)
     def setup_system(self):

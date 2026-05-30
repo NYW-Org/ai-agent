@@ -1,0 +1,54 @@
+# ==========================================
+# 1. Python & Virtual Environments
+# ==========================================
+.venv/
+venv/
+ENV/
+env/
+*.pyc
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ==========================================
+# 2. Machine Learning Caches & Weights
+# ==========================================
+# Never commit raw model tensors or local download caches
+.cache/
+cache/
+outputs/
+checkpoints/
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# ==========================================
+# 3. JetBrains IntelliJ IDEA / PyCharm
+# ==========================================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ==========================================
+# 4. Java / Spring Boot Build Artifacts
+# ==========================================
+target/
+!.mvn/wrapper/maven-wrapper.jar
+build/
+.gradle/
+*.class
+*.jar
+*.war
+*.ear
+
+# ==========================================
+# 5. Environment Variables & Secret Files
+# ==========================================
+# Backups of configurations that might hold hardcoded tokens
+.env
+.env.local
+*.toml
+!.modal.toml # exclude if you want, but best to keep it hidden
